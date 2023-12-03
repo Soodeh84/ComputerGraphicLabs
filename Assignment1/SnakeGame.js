@@ -43,7 +43,6 @@ const gameOverSound = new Audio ("sound1.wav");
 
 //other variables
 let gameOver = false;
-let score = 0;
 
 /******************Add the playing field*******************************/
 const fieldGeo = new THREE.PlaneGeometry(gridRow,gridCol);
@@ -125,7 +124,7 @@ function moveSnake() {
     eatBallSound.play();
     snakeTail();
     placeFood();
-    score++;
+    
   }
   // Check for collisions with boundaries or itself
   else if (
@@ -191,7 +190,6 @@ function ArrowKeysHandler(event) {
 function updateGame() {
   snakeHead.position.set(0, 0, 0.5);
   speed.set(0, 0, 0);
-  score = 0;
   // Remove snake body parts
   for (const bodyPart of snakeBody) {
     scene.remove(bodyPart);
@@ -203,7 +201,7 @@ function updateGame() {
 }
 
 // Set interval for snake movement
-setInterval(moveSnake, 500);
+setInterval(moveSnake, 250);
 
 /*******************************************Render loop************************************************ */
 const controls = new TrackballControls(camera, renderer.domElement); //allow user to control the scene by mouse or touch input
