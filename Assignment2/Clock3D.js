@@ -8,12 +8,8 @@ const canvas = document.getElementById("myCanvas");
 const renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true});
 renderer.setClearColor('black');  // background color
 
-
 // Create a new Three.js scene
 const scene = new THREE.Scene();
-// Just for debugging: delete for the final version!
-const axesHelper = new THREE.AxesHelper(2.5);
-scene.add( axesHelper );
 
 // Add a camera
 const camera = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 0.1, 500 );
@@ -25,7 +21,7 @@ const light = new THREE.PointLight();
 light.position.set(10,10,10);
 light.intensity = 50;
 scene.add(light);
-/*************************ClockBody************************* */
+/*************************************************ClockBody************************* */
 const bodyRadius = 3; //clock body radius
 const bodyGeo = new THREE.CylinderGeometry( bodyRadius, bodyRadius, 0.85, 62 ); 
 const bodyMat = new THREE.MeshStandardMaterial({ color: 'white',
@@ -35,132 +31,98 @@ const clockBody = new THREE.Mesh( bodyGeo, bodyMat );
 clockBody.rotation.x = 1.55;
 clockBody.position.set(0, 0, 0.5);
 scene.add( clockBody );
-
-//clock ticks-----------------------------------------------------------------------------------
+/*******************************************clock ticks******************************/
 const tickWidth = 0.08; //parallel to x-axis
 const tickHeight = 0.03; //parallel to y-axis
 const tickDepth = 0.01; //parallel to z-axis
 
+const oneMinuteInterval = 2 * Math.PI / 60; //tick intervals
+const bigTickRad = bodyRadius - 0.29; //radius for big ticks
+const smallTickRad = bodyRadius - 0.19; //radius for small ticks
+const initialRotation = Math.PI / 2;
+
 const bigTickGeo = new THREE.BoxGeometry(tickWidth * 6, tickHeight * 3,tickDepth * 2 );
 const smallTickGeo = new THREE.BoxGeometry(tickWidth * 3, tickHeight * 2,tickDepth * 2 );
 
+const regularTickMat = new THREE.MeshStandardMaterial({ color: 'black' }); //Material for all ticks except the 12 O'clock
+const highlightedTickMat = new THREE.MeshStandardMaterial({ color: 'yellow' }); //Material for the 12 O'clock tick
+
 const allTicks = new THREE.Group();
-scene.add(allTicks);
-//tick intervals
-const oneMinuteInterval = 2 * Math.PI / 60; // 60 minutes
-
-//radius for big and small ticks
-const bigTickRad = bodyRadius - 0.29;
-const smallTickRad = bodyRadius - 0.19;
-
-// Material for regular ticks
-const regularTickMat = new THREE.MeshStandardMaterial({ color: 'black' });
-// Material for the highlighted tick
-const highlightedTickMat = new THREE.MeshStandardMaterial({ color: 'yellow' });
-
-const initialRotation = Math.PI / 2;
-
 for (let i = 0; i < 60; i++) {
-  const tickGeo = i % 5 === 0 ? bigTickGeo : smallTickGeo;
-  const tickMat = i === 0 ? highlightedTickMat : regularTickMat;
-  const tickMesh = new THREE.Mesh(tickGeo, tickMat);
-
+  const tickMesh = new THREE.Mesh(i % 5 === 0 ? bigTickGeo: smallTickGeo, 
+                                  i === 0 ? highlightedTickMat: regularTickMat);
   const angle = i * oneMinuteInterval + initialRotation;
-  
-  // Set the position of the ticks based on their radius
-  const tickRadius = i % 5 === 0 ? bigTickRad : smallTickRad;
+
+  const tickRadius = i % 5 === 0 ? bigTickRad : smallTickRad; // Set the position of the ticks based on their radius
   tickMesh.position.set(tickRadius * Math.cos(angle), tickRadius * Math.sin(angle), 1);
-
-  // Rotate the tick to align with the clock
-  tickMesh.rotation.set(0, 0,angle);
-
+  tickMesh.rotation.set(0, 0,angle); // Rotate the tick to align with the clock
   allTicks.add(tickMesh);
-
   //add the ticks on the otherside
   const secondSideMesh = tickMesh.clone();
-  secondSideMesh.position.set(tickRadius * Math.cos(- angle + Math.PI), tickRadius * Math.sin(- angle + Math.PI), 0);
-  secondSideMesh.rotation.set(0, 0, - angle);
+  secondSideMesh.position.set(tickRadius * Math.cos(-angle + Math.PI), tickRadius * Math.sin(-angle + Math.PI), 0);
+  secondSideMesh.rotation.set(0, 0, -angle);
 
   allTicks.add(secondSideMesh);
-
 }
-
-/***********clockHands****************************** */
-//seconds hand
+scene.add(allTicks);
+/*********************************************clockHands****************************** */
+//......seconds hand......
 //front
-const secondHandGeo = new THREE.BoxGeometry(2, 0.05, 0.05 ); 
-const secondHandMat= new THREE.MeshBasicMaterial( {color: 'black'} ); 
-const secondHand = new THREE.Mesh( secondHandGeo, secondHandMat ); 
-//secondHand.position.set(0,0,0);
-scene.add( secondHand);
-
+const secondHandMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: 'black'})); 
 //back
-/* const secondHandGeoB = new THREE.BoxGeometry(2, 0.05, 0.05 ); 
-const secondHandMatB= new THREE.MeshBasicMaterial( {color: 'black'} ); 
-const secondHandB = new THREE.Mesh( secondHandGeoB, secondHandMatB ); 
-secondHandB.position.set(0,0,0);
-scene.add( secondHandB); */
-
-//minute hands 
+const secondHandBMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: '#158fad'})); 
+//.....minutes hands.....
 //Front
-const minuteHand = new THREE.Mesh(new THREE.SphereGeometry(2.1), new THREE.MeshStandardMaterial({ color: 'orange' }));
-minuteHand.scale.set(0.6, 0.05, 0.05); // Scaled sphere for the minute hand
-//minuteHand.position.set(0,0,0);
-scene.add(minuteHand);
-
-
+const minuteHandMesh = new THREE.Mesh(  new THREE.SphereGeometry(2.2), 
+                                    new THREE.MeshStandardMaterial({ color: 'orange' }));
 //Back
-/* const minuteHandBack = new THREE.Mesh(new THREE.SphereGeometry(3), new THREE.MeshStandardMaterial({ color: 'blue' }));
-
-scene.add(minuteHandBack);
-minuteHandBack.scale.set(0.3, 0.02, 0.03); // Scaled sphere for the minute hand
-minuteHandBack.position.set(0,0,0); */
-
-//hour hands
-//front
-const hourHand = new THREE.Mesh(new THREE.SphereGeometry(3.3), new THREE.MeshStandardMaterial({   color: 'blue',
-                                                                                                transparent: true,
-                                                                                                opacity: 0.8,
-                                                                                                metalness:0.3,
-                                                                                                roughness:0.5}));
-scene.add(hourHand);
-hourHand.scale.set(0.3, 0.02, 0.03);  // Scaled sphere for the hour hand
-//hourHand.position.set(0,0,0);
+const minuteHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(2.2), new THREE.MeshStandardMaterial({ color: '#ccac93' }));
+//....Hours hand.....
+//Front
+const hourHandMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: '#808080'}));
 //back
-/* const hourHandBack = new THREE.Mesh(new THREE.SphereGeometry(2), new THREE.MeshStandardMaterial({ color: 'green' }));
+const hourHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: 'purple' }));
 
-scene.add(hourHandBack);
-hourHandBack.scale.set(0.6, 0.05, 0.05);  // Scaled sphere for the hour hand */
+const clockHands = new THREE.Object3D();
+clockHands.add(minuteHandMesh);//child[0]
+clockHands.add(minuteHandBackMesh);//child[1]
+clockHands.add(hourHandMesh);//child[2]
+clockHands.add(hourHandBackMesh);//child[3]
+clockHands.add(secondHandMesh);//child[4]
+clockHands.add(secondHandBMesh);//child[5]
+scene.add(clockHands);
 
-/**************ClockBlob************************************ */
+const minuteHand = clockHands.children[0]; minuteHand.scale.set(0.65, 0.04, 0.05);
+const minuteHandBack = clockHands.children[1]; minuteHandBack.scale.set(0.65, 0.04, 0.05); 
+const hourHand = clockHands.children[2]; hourHand.scale.set(0.3, 0.035, 0.03);
+const hourHandBack = clockHands.children[3]; hourHandBack.scale.set(0.3, 0.035, 0.03);
+const secondHand = clockHands.children[4]; 
+const secondHandB = clockHands.children[5]; 
+/**************************************************ClockBlob************************************ */
 //front
-const blobGeo = new THREE.SphereGeometry( 0.53, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); //create hemisphere
+const blobGeo = new THREE.SphereGeometry( 0.35, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); //create hemisphere
 const blobMat = new THREE.MeshStandardMaterial( { color: 'purple',
                                                   transparent: true,
                                                   opacity: 1,
                                                   metalness: 0.5,
                                                   roughness: 0.5} ); 
 const clockBlob= new THREE.Mesh( blobGeo, blobMat); 
-clockBlob.position.set(0,0,0.5);
+clockBlob.position.set(0,0,0.85);
 clockBlob.rotation.x = 1.5;
 scene.add( clockBlob);
-
 //back
-const blobGeoB = new THREE.SphereGeometry( 0.53, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); //create hemisphere
+const blobGeoB = new THREE.SphereGeometry( 0.35, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); 
 const blobMatB = new THREE.MeshStandardMaterial( { color: 'green',
                                                   transparent: true,
                                                   opacity: 1,
                                                   metalness: 0.5,
                                                   roughness: 0.5} ); 
 const clockBlobB = new THREE.Mesh( blobGeoB, blobMatB); 
-clockBlobB.position.set(0,0,0.5);
+clockBlobB.position.set(0,0,0.15);
 clockBlobB.rotation.x = -1.5;
 scene.add( clockBlobB);
-
 /*******************************cylindrical outer ring from ch5/ex2****************************************************/
-const mat = new THREE.MeshStandardMaterial({color:'#afeeee',
-                                            transparent: true,
-                                            opacity: 0.5,
+const mat = new THREE.MeshStandardMaterial({color:'#6accbc',
                                             metalness:0.2,
                                             roughness:0.2,
                                             flatShading:true,   
@@ -194,42 +156,60 @@ const extrudeRing = new THREE.Mesh(extrudeGeo, mat);
 scene.add(extrudeRing);
 
 /************************************************************************************************* */
-const controls = new TrackballControls(camera, renderer.domElement);
-                       
+const controls = new TrackballControls(camera, renderer.domElement);                      
 // Render the scene
 function render() {
   requestAnimationFrame(render);
 
   light.position.copy(camera.position.clone());
 
-  //clockRotattion!
+  //--------------for Hamburg Time!---------------
   let date = new Date();
-  //console.log(date);
   const rad = 1.2;
 
   let seconds = date.getSeconds();
   let minutes = date.getMinutes();
   let hours   = date.getHours();
-  //update seconds
+  //update Hamburg seconds
   const secondRotation = (Math.PI/30) * -seconds;
   secondHand.rotation.z = initialRotation + secondRotation;
-  secondHand.position.set(rad*Math.cos(initialRotation + secondRotation),rad*Math.sin(initialRotation + secondRotation), 1);
-
-  //update minutes
+  secondHand.position.set(rad*Math.cos(initialRotation + secondRotation),rad*Math.sin(initialRotation + secondRotation), 1.1);
+  //update Hamburg minutes
   const minuteRotation = (Math.PI/30) * -minutes;
   minuteHand.rotation.z = initialRotation + minuteRotation;
   minuteHand.position.set(rad * Math.cos(initialRotation + minuteRotation), 
                           rad * Math.sin(initialRotation + minuteRotation), 
                           0.95);
-
-  //update hour
+  //update Hamburg hour
   const hourRotation = (Math.PI/6) * -(hours % 12 + minutes/60);
   hourHand.rotation.z = initialRotation + hourRotation;
   hourHand.position.set(rad*Math.cos(initialRotation + hourRotation),
                         rad*Math.sin(initialRotation + hourRotation),
                         0.9);
+  //-------------------------Texas Time!---------------------------
+  //Central Time with time offset: UTC/GMT-06:00
+  let utc = date.getTime()+(date.getTimezoneOffset() * 60000);
+  let TexasDate = new Date(utc + (3600000 * -6));
 
-
+  let secondsT = TexasDate.getSeconds();
+  let minutesT = TexasDate.getMinutes();
+  let hoursT   = TexasDate.getHours();
+  //update Texas seconds
+  const secondRotationB = (Math.PI/30) * secondsT;
+  secondHandB.rotation.z = initialRotation + secondRotationB;
+  secondHandB.position.set(rad*Math.cos(initialRotation + secondRotationB),rad*Math.sin(initialRotation + secondRotationB), -0.05);
+  //update texas minutes
+  const minuteRotationT = (Math.PI/30) * minutesT;
+  minuteHandBack.rotation.z = initialRotation + minuteRotationT;
+  minuteHandBack.position.set(rad * Math.cos(initialRotation + minuteRotationT), 
+                          rad * Math.sin(initialRotation + minuteRotationT), 
+                          0.04);
+  //update Hamburg hour
+  const hourRotationT = (Math.PI/6) * (hoursT % 12 + minutesT/60);
+  hourHandBack.rotation.z = initialRotation + hourRotationT;
+  hourHandBack.position.set(rad*Math.cos(initialRotation + hourRotationT),
+                        rad*Math.sin(initialRotation + hourRotationT),
+                        0.05);
 
   controls.update();
   renderer.render(scene, camera);
