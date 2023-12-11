@@ -107,21 +107,17 @@ scene.add(hourHandBack);
 //front
 const blobGeo = new THREE.SphereGeometry( 0.35, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); //create hemisphere
 const blobMat = new THREE.MeshStandardMaterial( { color: 'purple',
-                                                  transparent: true,
-                                                  opacity: 1,
-                                                  metalness: 0.5,
-                                                  roughness: 0.5} ); 
+                                                  metalness: 0.75,
+                                                  roughness: 0.5}); 
 const clockBlob= new THREE.Mesh( blobGeo, blobMat); 
 clockBlob.position.set(0,0,0.85);
 clockBlob.rotation.x = 1.5;
 scene.add( clockBlob);
 //back
 const blobGeoB = new THREE.SphereGeometry( 0.35, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); 
-const blobMatB = new THREE.MeshStandardMaterial( { color: 'green',
-                                                  transparent: true,
-                                                  opacity: 1,
-                                                  metalness: 0.5,
-                                                  roughness: 0.5} ); 
+const blobMatB = new THREE.MeshStandardMaterial( {color: 'green',
+                                                  metalness: 0.75,
+                                                  roughness: 0.5}); 
 const clockBlobB = new THREE.Mesh( blobGeoB, blobMatB); 
 clockBlobB.position.set(0,0,0.15);
 clockBlobB.rotation.x = -1.5;
@@ -158,7 +154,6 @@ const extrudeSettings = {
 const extrudeGeo = new THREE.ExtrudeGeometry(outerCircle, extrudeSettings);
 const extrudeRing = new THREE.Mesh(extrudeGeo, mat);
 scene.add(extrudeRing);
-
 /************************************************************************************************* */
 const controls = new TrackballControls(camera, renderer.domElement);                      
 // Render the scene
