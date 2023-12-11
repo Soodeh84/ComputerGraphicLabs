@@ -58,46 +58,51 @@ for (let i = 0; i < 60; i++) {
   tickMesh.rotation.set(0, 0,angle); // Rotate the ticks to align with the clock
   allTicks.add(tickMesh);
   //add the ticks on the otherside
-  const secondSideMesh = tickMesh.clone();
-  secondSideMesh.position.set(tickRadius * Math.cos(-angle + Math.PI), tickRadius * Math.sin(-angle + Math.PI), 0);
-  secondSideMesh.rotation.set(0, 0, -angle);
+  const TickBackMesh = tickMesh.clone();
+  TickBackMesh.position.set(tickRadius * Math.cos(-angle + Math.PI), tickRadius * Math.sin(-angle + Math.PI), 0);
+  TickBackMesh.rotation.set(0, 0, -angle);
 
-  allTicks.add(secondSideMesh);
+  allTicks.add(TickBackMesh);
 }
 scene.add(allTicks);
 /*********************************************clockHands****************************** */
-//......seconds hand......
+//......seconds hand.....
 //front
-const secondHandMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: 'purple'})); 
+const secondHand = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.05, 0.05), 
+                                  new THREE.MeshBasicMaterial({color: 'purple'})); 
 //back
-const secondHandBMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: '#003300'})); 
-//.....minutes hands.....
+const secondHandB = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.05, 0.05),
+                                   new THREE.MeshBasicMaterial({color: '#003300'})); 
+//......minute hands..... 
 //Front
-const minuteHandMesh = new THREE.Mesh(  new THREE.SphereGeometry(2.2), 
-                                    new THREE.MeshStandardMaterial({ color: '#808080'}));
+const minuteHand = new THREE.Mesh(new THREE.SphereGeometry(2.2), 
+                                  new THREE.MeshStandardMaterial({ color: '#808080'}));
 //Back
-const minuteHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(2.2), new THREE.MeshStandardMaterial({ color: '#cc6666'}));
-//....Hours hand.....
-//Front
-const hourHandMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: 'black'}));
+const minuteHandBack = new THREE.Mesh(new THREE.SphereGeometry(2.2),
+                                      new THREE.MeshStandardMaterial({ color: '#cc6666'}));
+//......hour hands.......
+//front
+const hourHand = new THREE.Mesh(new THREE.SphereGeometry(3.1), 
+                                new THREE.MeshStandardMaterial({ color: 'black'}));
+
 //back
-const hourHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: '#330033'}));
+const hourHandBack = new THREE.Mesh(new THREE.SphereGeometry(3.1), 
+                                    new THREE.MeshStandardMaterial({ color: '#330033'}));
 
-const clockHands = new THREE.Object3D();
-clockHands.add(minuteHandMesh);//child[0]
-clockHands.add(minuteHandBackMesh);//child[1]
-clockHands.add(hourHandMesh);//child[2]
-clockHands.add(hourHandBackMesh);//child[3]
-clockHands.add(secondHandMesh);//child[4]
-clockHands.add(secondHandBMesh);//child[5]
-scene.add(clockHands);
+//hour and minute hands scaling
+minuteHand.scale.set(0.65, 0.04, 0.05);      //  minute hand front
+hourHand.scale.set(0.3, 0.035, 0.03);       //  hour hand front
+minuteHandBack.scale.set(0.65, 0.04, 0.05);//  minute hand back
+hourHandBack.scale.set(0.3, 0.035, 0.03); //  hour hand Back
 
-const minuteHand = clockHands.children[0]; minuteHand.scale.set(0.65, 0.04, 0.05);
-const minuteHandBack = clockHands.children[1]; minuteHandBack.scale.set(0.65, 0.04, 0.05); 
-const hourHand = clockHands.children[2]; hourHand.scale.set(0.3, 0.035, 0.03);
-const hourHandBack = clockHands.children[3]; hourHandBack.scale.set(0.3, 0.035, 0.03);
-const secondHand = clockHands.children[4]; 
-const secondHandB = clockHands.children[5]; 
+//add them to the scene
+scene.add(secondHand);
+scene.add(secondHandB);
+scene.add(minuteHand);
+scene.add(minuteHandBack);
+scene.add(hourHand);
+scene.add(hourHandBack);
+
 /**************************************************ClockBlob************************************ */
 //front
 const blobGeo = new THREE.SphereGeometry( 0.35, 32, 32, 0, 2*Math.PI, 0, Math.PI/2); //create hemisphere
