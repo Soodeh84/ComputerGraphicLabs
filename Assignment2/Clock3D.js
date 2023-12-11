@@ -24,11 +24,11 @@ scene.add(light);
 /*************************************************ClockBody************************* */
 const bodyRadius = 3; //clock body radius
 const bodyGeo = new THREE.CylinderGeometry( bodyRadius, bodyRadius, 0.85, 62 ); 
-const bodyMat = new THREE.MeshStandardMaterial({ color: 'white',
+const bodyMat = new THREE.MeshStandardMaterial({ color: '#cccccc',
                                                  metalness: 0.5,
                                                  roughness: 0.5}); 
 const clockBody = new THREE.Mesh( bodyGeo, bodyMat ); 
-clockBody.rotation.x = 1.55;
+clockBody.rotation.x = 1.56;
 clockBody.position.set(0, 0, 0.5);
 scene.add( clockBody );
 /*******************************************clock ticks******************************/
@@ -36,16 +36,16 @@ const tickWidth = 0.08; //parallel to x-axis
 const tickHeight = 0.03; //parallel to y-axis
 const tickDepth = 0.01; //parallel to z-axis
 
-const oneMinuteInterval = 2 * Math.PI / 60; //tick intervals
-const bigTickRad = bodyRadius - 0.29; //radius for big ticks
-const smallTickRad = bodyRadius - 0.19; //radius for small ticks
-const initialRotation = Math.PI / 2;
+const oneMinuteInterval = 2 * Math.PI / 60; //tick intervals: 6°
+const bigTickRad = 2.73; //radius for big ticks
+const smallTickRad = 2.83; //radius for small ticks
+const initialRotation = Math.PI / 2; //90°
 
 const bigTickGeo = new THREE.BoxGeometry(tickWidth * 6, tickHeight * 3,tickDepth * 2 );
 const smallTickGeo = new THREE.BoxGeometry(tickWidth * 3, tickHeight * 2,tickDepth * 2 );
 
-const regularTickMat = new THREE.MeshStandardMaterial({ color: 'black' }); //Material for all ticks except the 12 O'clock
-const highlightedTickMat = new THREE.MeshStandardMaterial({ color: 'yellow' }); //Material for the 12 O'clock tick
+const regularTickMat = new THREE.MeshStandardMaterial({ color: '#000033' }); //Material for all ticks except the 12 O'clock
+const highlightedTickMat = new THREE.MeshStandardMaterial({ color: '#ffff99' }); //Material for the 12 O'clock tick
 
 const allTicks = new THREE.Group();
 for (let i = 0; i < 60; i++) {
@@ -55,7 +55,7 @@ for (let i = 0; i < 60; i++) {
 
   const tickRadius = i % 5 === 0 ? bigTickRad : smallTickRad; // Set the position of the ticks based on their radius
   tickMesh.position.set(tickRadius * Math.cos(angle), tickRadius * Math.sin(angle), 1);
-  tickMesh.rotation.set(0, 0,angle); // Rotate the tick to align with the clock
+  tickMesh.rotation.set(0, 0,angle); // Rotate the ticks to align with the clock
   allTicks.add(tickMesh);
   //add the ticks on the otherside
   const secondSideMesh = tickMesh.clone();
@@ -68,20 +68,20 @@ scene.add(allTicks);
 /*********************************************clockHands****************************** */
 //......seconds hand......
 //front
-const secondHandMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: 'black'})); 
+const secondHandMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: 'purple'})); 
 //back
-const secondHandBMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: '#158fad'})); 
+const secondHandBMesh = new THREE.Mesh( new THREE.BoxGeometry(2.5, 0.05, 0.05), new THREE.MeshBasicMaterial({color: '#003300'})); 
 //.....minutes hands.....
 //Front
 const minuteHandMesh = new THREE.Mesh(  new THREE.SphereGeometry(2.2), 
-                                    new THREE.MeshStandardMaterial({ color: 'orange' }));
+                                    new THREE.MeshStandardMaterial({ color: '#808080'}));
 //Back
-const minuteHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(2.2), new THREE.MeshStandardMaterial({ color: '#ccac93' }));
+const minuteHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(2.2), new THREE.MeshStandardMaterial({ color: '#cc6666'}));
 //....Hours hand.....
 //Front
-const hourHandMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: '#808080'}));
+const hourHandMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: 'black'}));
 //back
-const hourHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: 'purple' }));
+const hourHandBackMesh = new THREE.Mesh(new THREE.SphereGeometry(3.1), new THREE.MeshStandardMaterial({ color: '#330033'}));
 
 const clockHands = new THREE.Object3D();
 clockHands.add(minuteHandMesh);//child[0]
@@ -130,20 +130,19 @@ const mat = new THREE.MeshStandardMaterial({color:'#6accbc',
 
 const outerRadius = 3.4;  // inner radius of the ring
 const height = 0.90;
-const innerRadius = 3;
 
 // a ring with ExtrudeGeometry
 const outerCircle = new THREE.Shape();
 outerCircle.moveTo(outerRadius, 0);
 const innerCircle = new THREE.Shape();   // serves as hole in outerCircle
-innerCircle.moveTo(innerRadius, 0);
+innerCircle.moveTo(bodyRadius, 0);
 const N =100;
 const deltaPhi = 2*Math.PI / N;
 for(let k=1; k<=N; ++k) {
   outerCircle.lineTo(outerRadius*Math.cos(k*deltaPhi),
                      outerRadius*Math.sin(k*deltaPhi));
-  innerCircle.lineTo(innerRadius*Math.cos(k*deltaPhi),
-                     innerRadius*Math.sin(k*deltaPhi));
+  innerCircle.lineTo(bodyRadius*Math.cos(k*deltaPhi),
+                     bodyRadius*Math.sin(k*deltaPhi));
 }
 outerCircle.holes.push(innerCircle);
 
@@ -173,7 +172,7 @@ function render() {
   //update Hamburg seconds
   const secondRotation = (Math.PI/30) * -seconds;
   secondHand.rotation.z = initialRotation + secondRotation;
-  secondHand.position.set(rad*Math.cos(initialRotation + secondRotation),rad*Math.sin(initialRotation + secondRotation), 1.1);
+  secondHand.position.set(rad*Math.cos(initialRotation + secondRotation),rad*Math.sin(initialRotation + secondRotation), 1.05);
   //update Hamburg minutes
   const minuteRotation = (Math.PI/30) * -minutes;
   minuteHand.rotation.z = initialRotation + minuteRotation;
@@ -188,8 +187,9 @@ function render() {
                         0.9);
   //-------------------------Texas Time!---------------------------
   //Central Time with time offset: UTC/GMT-06:00
-  let utc = date.getTime()+(date.getTimezoneOffset() * 60000);
-  let TexasDate = new Date(utc + (3600000 * -6));
+  const timezoneOffsets = -6;
+  let utc = date.getTime()+(date.getTimezoneOffset() * 60000); //current utc + (offset(min) and convert to millisec by *60000
+  let TexasDate = new Date(utc + (3600000 * timezoneOffsets));
 
   let secondsT = TexasDate.getSeconds();
   let minutesT = TexasDate.getMinutes();
@@ -198,13 +198,13 @@ function render() {
   const secondRotationB = (Math.PI/30) * secondsT;
   secondHandB.rotation.z = initialRotation + secondRotationB;
   secondHandB.position.set(rad*Math.cos(initialRotation + secondRotationB),rad*Math.sin(initialRotation + secondRotationB), -0.05);
-  //update texas minutes
+  //update Texas minutes
   const minuteRotationT = (Math.PI/30) * minutesT;
   minuteHandBack.rotation.z = initialRotation + minuteRotationT;
   minuteHandBack.position.set(rad * Math.cos(initialRotation + minuteRotationT), 
                           rad * Math.sin(initialRotation + minuteRotationT), 
                           0.04);
-  //update Hamburg hour
+  //update Texas hour
   const hourRotationT = (Math.PI/6) * (hoursT % 12 + minutesT/60);
   hourHandBack.rotation.z = initialRotation + hourRotationT;
   hourHandBack.position.set(rad*Math.cos(initialRotation + hourRotationT),
