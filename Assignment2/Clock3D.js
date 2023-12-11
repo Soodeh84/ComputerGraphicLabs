@@ -1,4 +1,4 @@
-// "use strict";
+"use strict";
 
 import * as THREE from "three";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
